@@ -1,0 +1,151 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model users {
+    id              String   @id @default(uuid()) @db.Uuid
+    email           String   @unique
+    name            String
+    profile_picture String?
+    created_at      DateTime @default(now())
+
+    // User can own multiple teams
+    teams_owned teams[] @relation("TeamOwner")
+
+    // Existing relations
+    teams          team_members[]
+    projects       project_members[]
+    tasks_created  tasks[]           @relation("TaskCreator")
+    tasks_assigned task_assignees[]
+    assigned_tasks task_assignees[]  @relation("TaskAssignedBy")
+
+    // Inverse relation for projects
+    projects_owned projects[] @relation("ProjectOwner")
+    comments       comments[]
+}
+
+model teams {
+    id          String  @id @default(uuid()) @db.Uuid
+    name        String
+    description String?
+    owner_id    String  @db.Uuid
+    owner       users   @relation("TeamOwner", fields: [owner_id], references: [id])
+
+    members    team_members[]
+    projects   projects[]
+    created_at DateTime       @default(now())
+}
+
+model team_members {
+    id         String   @id @default(uuid()) @db.Uuid
+    user_id    String   @db.Uuid
+    user       users    @relation(fields: [user_id], references: [id])
+    team_id    String   @db.Uuid
+    team       teams    @relation(fields: [team_id], references: [id])
+    role       roles
+    created_at DateTime @default(now())
+
+    @@unique([user_id, team_id])
+}
+
+model projects {
+    id          String  @id @default(uuid()) @db.Uuid
+    name        String
+    description String?
+    team_id     String  @db.Uuid
+    team        teams   @relation(fields: [team_id], references: [id])
+
+    owner_id String @db.Uuid
+    owner    users  @relation("ProjectOwner", fields: [owner_id], references: [id])
+
+    members    project_members[]
+    tasks      tasks[]
+    created_at DateTime          @default(now())
+    start_date DateTime? // Added start date
+}
+
+model project_members {
+    id         String   @id @default(uuid()) @db.Uuid
+    user_id    String   @db.Uuid
+    user       users    @relation(fields: [user_id], references: [id])
+    project_id String   @db.Uuid
+    project    projects @relation(fields: [project_id], references: [id])
+    role       roles
+    created_at DateTime @default(now())
+
+    @@unique([user_id, project_id])
+}
+
+model tasks {
+    id          String           @id @default(uuid()) @db.Uuid
+    title       String
+    tags        String[]
+    description String?
+    project_id  String           @db.Uuid
+    project     projects         @relation(fields: [project_id], references: [id])
+    created_by  String           @db.Uuid
+    creator     users            @relation("TaskCreator", fields: [created_by], references: [id])
+    status      task_status
+    priority    priority
+    due_date    DateTime?
+    created_at  DateTime         @default(now())
+    start_date  DateTime? // Added start date
+    comments    comments[]       @relation("TaskComments")
+    assignees   task_assignees[]
+}
+
+model comments {
+    id         String     @id @default(uuid()) @db.Uuid
+    task_id    String     @db.Uuid
+    task       tasks      @relation("TaskComments", fields: [task_id], references: [id])
+    user_id    String     @db.Uuid
+    user       users      @relation(fields: [user_id], references: [id])
+    content    String
+    parent_id  String?    @db.Uuid
+    parent     comments?  @relation("CommentReplies", fields: [parent_id], references: [id])
+    replies    comments[] @relation("CommentReplies") // Replies to this comment
+    created_at DateTime   @default(now())
+
+    @@index([task_id])
+}
+
+model task_assignees {
+    id          String   @id @default(uuid()) @db.Uuid
+    task_id     String   @db.Uuid
+    task        tasks    @relation(fields: [task_id], references: [id])
+    user_id     String   @db.Uuid
+    user        users    @relation(fields: [user_id], references: [id])
+    assigned_by String   @db.Uuid
+    assigner    users    @relation("TaskAssignedBy", fields: [assigned_by], references: [id])
+    created_at  DateTime @default(now())
+
+    @@unique([user_id, task_id])
+}
+
+// Enums
+
+enum roles {
+    owner
+    team_admin
+    project_admin
+    contributor
+    viewer
+}
+
+enum task_status {
+    backlog
+    in_review
+    in_progress
+    complete
+}
+
+enum priority {
+    low
+    medium
+    high
+}
