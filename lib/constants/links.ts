@@ -1,6 +1,8 @@
-import { TeamsIcon } from "@/app/_components/icons/icons";
-import { Briefcase, LayoutDashboard, Settings } from "lucide-react";
-import { RiTeamLine } from "react-icons/ri";
+import { MdDashboard } from "react-icons/md";
+import { BiSolidBriefcaseAlt } from "react-icons/bi";
+import { ImUsers } from "react-icons/im";
+import { FaUsers } from "react-icons/fa6";
+import { IoSettings } from "react-icons/io5";
 
 export const fakeProjects = [
 	{
@@ -65,28 +67,28 @@ export const linkDetails = [
 	{
 		label: "Dashboard",
 		href: "/workspace",
-		icon: LayoutDashboard,
+		icon: MdDashboard,
 	},
 	{
 		label: "Schedule",
 		href: "/workspace/schedule",
-		icon: Briefcase,
+		icon: BiSolidBriefcaseAlt,
 	},
 
 	{
 		label: "Teams",
 		href: "/workspace/teams",
-		icon: TeamsIcon,
+		icon: ImUsers,
 	},
 	{
 		label: "Members",
 		href: "/workspace/members",
-		icon: RiTeamLine,
+		icon: FaUsers,
 	},
 
 	{
 		label: "Settings",
 		href: "/workspace/settings",
-		icon: Settings,
+		icon: IoSettings,
 	},
 ];

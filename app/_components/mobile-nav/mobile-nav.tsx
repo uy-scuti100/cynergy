@@ -2,7 +2,9 @@
 
 import Logo from "@/components/global/logo";
 import { Input } from "@/components/ui/input";
-import { Command, Search } from "lucide-react";
+import { Search } from "lucide-react";
+import { AiFillMacCommand } from "react-icons/ai";
+
 import { HiOutlineX } from "react-icons/hi";
 import { Dispatch } from "react";
 import { Separator } from "@/components/ui/separator";
@@ -17,7 +19,10 @@ import { CommandMenu } from "../command-menu/command_opener";
 import ReusableAccordion from "../reusable-accordion/reusable-accordion";
 import { SidebarLink } from "../sidebar-link/sidebar-link";
 import PriorityAccordion from "../priority";
+import useFetchTeam from "@/lib/queries/useFetchTeam";
+import Image from "next/image";
 interface MobileNavProps {
+	id: string | null;
 	openNav: boolean;
 	toggleNav: () => void;
 	navRef: React.RefObject<HTMLDivElement>;
@@ -25,7 +30,9 @@ interface MobileNavProps {
 	setOpen: Dispatch<React.SetStateAction<boolean>>;
 	setOpenNav: Dispatch<React.SetStateAction<boolean>>;
 }
+
 export default function MobileNavigation({
+	id,
 	openNav,
 	toggleNav,
 	setOpenNav,
@@ -33,6 +40,7 @@ export default function MobileNavigation({
 	open,
 	setOpen,
 }: MobileNavProps) {
+	const { teamsData, isLoading, isError } = useFetchTeam(id as string);
 	return (
 		<>
 			<nav
@@ -44,10 +52,10 @@ export default function MobileNavigation({
 					ref={navRef}
 					className="bg-[var(--background)] absolute top-0 rounded-sm ring-offset-background transition-opacity focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none inset-y-0 left-0 h-full w-2/4 border-r"
 				>
-					<div className="bg-background flex justify-between text-4xl border-b px-4 py-4 cursor-pointer items-center">
-						<div className="flex items-end justify-between w-full">
-							<Logo />
-
+					<div className="bg-background flex justify-between text-4xl border-b px-4 py-2 cursor-pointer items-center">
+						<div className="flex items-center justify-between w-full">
+							{/* <Logo /> */}
+							<Image src="/new-logo.png" alt="logo" width={150} height={50} />
 							<HiOutlineX size={20} onClick={toggleNav} />
 						</div>
 					</div>
@@ -66,7 +74,7 @@ export default function MobileNavigation({
 								className="bg-none focus:outline-none outline-none focus:ring-0 border-none shadow-none ring-0 focus:ring-offset-0 focus-visible:ring-0 placeholder:font- placeholder:text-sm placeholder:font-medium rounded-none"
 							/>
 							<div className="flex items-center">
-								<Command size={14} />
+								<AiFillMacCommand size={14} />
 								<span className="text-xs">K</span>
 							</div>
 						</div>
@@ -86,13 +94,22 @@ export default function MobileNavigation({
 						{/* teams, projects and tasks accordion */}
 						<div className="ml-3 pr-3 h-[calc(100vh_-_292px_-_61px)] overflow-y-auto">
 							<ReusableAccordion
-								tag="teams"
-								projects={fakeTeam.map((project) => ({
-									...project,
-									id: project.id.toString(),
-								}))}
+								tag="team"
+								projects={{
+									ownedTeams:
+										teamsData?.ownedTeams.map((team) => ({
+											...team,
+											id: team.id.toString(),
+										})) || [],
+									memberTeams:
+										teamsData?.memberTeams.map((team) => ({
+											...team,
+											id: team.id.toString(),
+										})) || [],
+								}}
 							/>
-							<ReusableAccordion
+
+							{/* <ReusableAccordion
 								tag="projects"
 								projects={fakeProjects.map((project) => ({
 									...project,
@@ -105,7 +122,7 @@ export default function MobileNavigation({
 									...project,
 									id: project.id.toString(),
 								}))}
-							/>
+							/> */}
 							<div className="mt-5">
 								<PriorityAccordion />
 							</div>

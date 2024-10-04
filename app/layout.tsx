@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
 import { Source_Sans_3 } from "next/font/google";
 import "./globals.css";
-
-import TopLoader from "@/components/global/top-loader";
+import NextTopLoader from "nextjs-toploader";
 import { Toaster } from "sonner";
 import { ThemeProvider } from "@/lib/providers/theme/theme-provider";
 import { ReduxProvider } from "@/lib/providers/redux/provider";
@@ -33,7 +31,19 @@ export default function RootLayout({
 			suppressHydrationWarning
 		>
 			<body>
-				<TopLoader />
+				<NextTopLoader
+					color="#564dde"
+					initialPosition={0.08}
+					crawlSpeed={200}
+					height={3}
+					crawl={true}
+					showSpinner={false}
+					easing="ease"
+					speed={200}
+					shadow="0 0 10px #564dde,0 0 5px #564dde"
+					zIndex={1600}
+					showAtBottom={false}
+				/>
 				<ThemeProvider
 					attribute="class"
 					defaultTheme="system"
@@ -42,7 +52,7 @@ export default function RootLayout({
 				>
 					<ReduxProvider>
 						<ReactQueryProvider>
-							<div className="mx-auto ">{children}</div>
+							<div className="mx-auto">{children}</div>
 						</ReactQueryProvider>
 					</ReduxProvider>
 					<Toaster />

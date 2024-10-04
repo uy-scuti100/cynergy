@@ -27,7 +27,7 @@ export const commentsSlice = createSlice({
 				state.comments.push({
 					...action.payload,
 					parent: undefined,
-					replies: [],
+					comments: [],
 				});
 			}
 		},
@@ -40,7 +40,7 @@ export const commentsSlice = createSlice({
 					state.comments[index] = {
 						...action.payload,
 						parent: undefined,
-						replies: [],
+						comments: [],
 					};
 				}
 			}

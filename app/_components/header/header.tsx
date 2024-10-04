@@ -1,5 +1,6 @@
 "use client";
-import { Bell, Menu, Search } from "lucide-react";
+import { Menu, Search } from "lucide-react";
+import { FaBell } from "react-icons/fa6";
 
 import {
 	DropdownMenu,
@@ -12,10 +13,11 @@ import {
 import Link from "next/link";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import { KeyboardEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Input } from "@/components/ui/input";
 import MobileNavigation from "../mobile-nav/mobile-nav";
 import { CommandMenu } from "../command-menu/command_opener";
+import { AiFillMacCommand } from "react-icons/ai";
 
 interface HeaderProps {
 	id: string | null;
@@ -34,12 +36,11 @@ export default function Header({
 	const [open, setOpen] = useState(false);
 	const navRef = useRef<HTMLDivElement | null>(null);
 
-	const handleClickOutside = (event: { target:   }): void => {
-		if (navRef.current && !navRef.current.contains(event.target)) {
+	const handleClickOutside = (event: { target: EventTarget | null }): void => {
+		if (navRef.current && !navRef.current.contains(event.target as Node)) {
 			setOpenNav(false);
 		}
 	};
-
 	useEffect(() => {
 		const updateBodyOverflow = () => {
 			if (openNav) {
@@ -82,26 +83,30 @@ export default function Header({
 						}}
 						type="search"
 						placeholder="Search..."
-						// className="bg-none focus:outline-none outline-none focus:ring-0 shadow-none ring-0 focus:ring-offset-0 focus-visible:ring-0 placeholder:font- placeholder:text-sm placeholder:font-regular md:w-[150px] lg:w-[336px] disable rounded-none"
 						className="bg-none focus:outline-none outline-none focus:ring-0 border-none shadow-none ring-0 focus:ring-offset-0 focus-visible:ring-0 placeholder:font-regular placeholder:text-sm placeholder:font-medium rounded-none md:w-[250px] lg:w-[336px] pl-8 "
 					/>
+					<div className="flex items-center absolute -right-2 top-1/2 -translate-x-1/2 -translate-y-1/2">
+						<AiFillMacCommand /> <span className="ml-1">K</span>
+					</div>
 				</div>
 
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
 						<button className="overflow-hidden rounded-full">
-							<Bell className="h-6 w-6" />
+							<FaBell className="h-6 w-6" />
 							{/* <TfiBell className="h-6 w-6" /> */}
 						</button>
 					</DropdownMenuTrigger>
 				</DropdownMenu>
+
+				{/* <ModeToggle /> */}
 				{/* User Profile */}
 
 				{id && name && email && profile_picture && (
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
 							<button className="overflow-hidden rounded-full">
-								<Avatar className="border-2">
+								<Avatar className="border-2 border-blue-400">
 									<AvatarImage src={profile_picture} alt={name} />
 									<AvatarFallback>
 										{email.substring(0, 2).toUpperCase()}
@@ -110,15 +115,6 @@ export default function Header({
 							</button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent align="end">
-							<DropdownMenuLabel>
-								<Link href={`/profile`}>My Account</Link>
-							</DropdownMenuLabel>
-							<DropdownMenuLabel>
-								<Link href={`/profile`}>My Account</Link>
-							</DropdownMenuLabel>
-							<DropdownMenuLabel>
-								<Link href={`/profile`}>My Account</Link>
-							</DropdownMenuLabel>
 							<DropdownMenuLabel>
 								<Link href={`/profile`}>My Account</Link>
 							</DropdownMenuLabel>
@@ -135,6 +131,7 @@ export default function Header({
 					setOpenNav={setOpenNav}
 					navRef={navRef}
 					open={open}
+					id={id}
 					setOpen={setOpen}
 				/>
 			</header>
@@ -142,3 +139,5 @@ export default function Header({
 		</>
 	);
 }
+
+// className="bg-none focus:outline-none outline-none focus:ring-0 shadow-none ring-0 focus:ring-offset-0 focus-visible:ring-0 placeholder:font- placeholder:text-sm placeholder:font-regular md:w-[150px] lg:w-[336px] disable rounded-none"

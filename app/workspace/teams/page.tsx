@@ -1,10 +1,9 @@
 import UsableHeading from "@/app/_components/reusable-header/usableheader";
-import { Button } from "@/components/ui/button";
-import { Plus } from "lucide-react";
-import CreateTeamModal from "./_components/createTeamModal";
 import { createClient } from "@/lib/supabase/server";
 import { client } from "@/lib/types/prisma";
-import TeamsList from "./_components/teamslist";
+import TeamsList from "./_components/misc/teamslist";
+import { redirect } from "next/navigation";
+import TeamDialog from "./_components/forms/team/create-team-dialog";
 
 export default async function page() {
 	const supabase = createClient();
@@ -24,20 +23,17 @@ export default async function page() {
 	});
 
 	if (!user) {
-		return null; // or handle the case when user is not found
+		redirect("/login");
 	}
 
 	return (
 		<div className="common__styles">
-			<div className="flex items-center justify-between">
-				<UsableHeading
-					title="Teams page"
-					description="lets see how this goes"
-				/>
-				<CreateTeamModal user={user} />
+			<div className="flex items-center justify-between pr-5 md:pr-0 ">
+				<UsableHeading title="Teams" />
+				<TeamDialog user={user} message="New Team" />
 			</div>
 
-			<div>
+			<div className="mt-10">
 				<TeamsList user={user} />
 			</div>
 		</div>

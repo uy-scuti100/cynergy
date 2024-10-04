@@ -7,83 +7,85 @@ export type Json =
 	| Json[];
 
 export type Database = {
+	graphql_public: {
+		Tables: {
+			[_ in never]: never;
+		};
+		Views: {
+			[_ in never]: never;
+		};
+		Functions: {
+			graphql: {
+				Args: {
+					operationName?: string;
+					query?: string;
+					variables?: Json;
+					extensions?: Json;
+				};
+				Returns: Json;
+			};
+		};
+		Enums: {
+			[_ in never]: never;
+		};
+		CompositeTypes: {
+			[_ in never]: never;
+		};
+	};
 	public: {
 		Tables: {
-			_prisma_migrations: {
-				Row: {
-					applied_steps_count: number;
-					checksum: string;
-					finished_at: string | null;
-					id: string;
-					logs: string | null;
-					migration_name: string;
-					rolled_back_at: string | null;
-					started_at: string;
-				};
-				Insert: {
-					applied_steps_count?: number;
-					checksum: string;
-					finished_at?: string | null;
-					id: string;
-					logs?: string | null;
-					migration_name: string;
-					rolled_back_at?: string | null;
-					started_at?: string;
-				};
-				Update: {
-					applied_steps_count?: number;
-					checksum?: string;
-					finished_at?: string | null;
-					id?: string;
-					logs?: string | null;
-					migration_name?: string;
-					rolled_back_at?: string | null;
-					started_at?: string;
-				};
-				Relationships: [];
-			};
 			comments: {
 				Row: {
 					content: string;
-					created_at: string;
+					created_at: string | null;
 					id: string;
 					parent_id: string | null;
+					project_id: string | null;
 					task_id: string;
 					user_id: string;
 				};
 				Insert: {
 					content: string;
-					created_at?: string;
-					id: string;
+					created_at?: string | null;
+					id?: string;
 					parent_id?: string | null;
+					project_id?: string | null;
 					task_id: string;
 					user_id: string;
 				};
 				Update: {
 					content?: string;
-					created_at?: string;
+					created_at?: string | null;
 					id?: string;
 					parent_id?: string | null;
+					project_id?: string | null;
 					task_id?: string;
 					user_id?: string;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "comments_parent_id_fkey";
+						foreignKeyName: "fk_comment_parent";
 						columns: ["parent_id"];
 						isOneToOne: false;
 						referencedRelation: "comments";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "comments_task_id_fkey";
+						foreignKeyName: "fk_comment_project";
+						columns: ["project_id"];
+						isOneToOne: false;
+						referencedRelation: "projects";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "fk_comment_task";
 						columns: ["task_id"];
 						isOneToOne: false;
 						referencedRelation: "tasks";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "comments_user_id_fkey";
+						foreignKeyName: "fk_comment_user";
 						columns: ["user_id"];
 						isOneToOne: false;
 						referencedRelation: "users";
@@ -93,21 +95,21 @@ export type Database = {
 			};
 			project_members: {
 				Row: {
-					created_at: string;
+					created_at: string | null;
 					id: string;
 					project_id: string;
 					role: Database["public"]["Enums"]["roles"];
 					user_id: string;
 				};
 				Insert: {
-					created_at?: string;
-					id: string;
+					created_at?: string | null;
+					id?: string;
 					project_id: string;
 					role: Database["public"]["Enums"]["roles"];
 					user_id: string;
 				};
 				Update: {
-					created_at?: string;
+					created_at?: string | null;
 					id?: string;
 					project_id?: string;
 					role?: Database["public"]["Enums"]["roles"];
@@ -115,14 +117,14 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "project_members_project_id_fkey";
+						foreignKeyName: "fk_project_member_project";
 						columns: ["project_id"];
 						isOneToOne: false;
 						referencedRelation: "projects";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "project_members_user_id_fkey";
+						foreignKeyName: "fk_project_member_user";
 						columns: ["user_id"];
 						isOneToOne: false;
 						referencedRelation: "users";
@@ -132,8 +134,9 @@ export type Database = {
 			};
 			projects: {
 				Row: {
-					created_at: string;
+					created_at: string | null;
 					description: string | null;
+					end_date: string | null;
 					id: string;
 					name: string;
 					owner_id: string;
@@ -141,17 +144,19 @@ export type Database = {
 					team_id: string;
 				};
 				Insert: {
-					created_at?: string;
+					created_at?: string | null;
 					description?: string | null;
-					id: string;
+					end_date?: string | null;
+					id?: string;
 					name: string;
 					owner_id: string;
 					start_date?: string | null;
 					team_id: string;
 				};
 				Update: {
-					created_at?: string;
+					created_at?: string | null;
 					description?: string | null;
+					end_date?: string | null;
 					id?: string;
 					name?: string;
 					owner_id?: string;
@@ -160,14 +165,14 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "projects_owner_id_fkey";
+						foreignKeyName: "fk_project_owner";
 						columns: ["owner_id"];
 						isOneToOne: false;
 						referencedRelation: "users";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "projects_team_id_fkey";
+						foreignKeyName: "fk_project_team";
 						columns: ["team_id"];
 						isOneToOne: false;
 						referencedRelation: "teams";
@@ -178,42 +183,42 @@ export type Database = {
 			task_assignees: {
 				Row: {
 					assigned_by: string;
-					created_at: string;
+					created_at: string | null;
 					id: string;
 					task_id: string;
 					user_id: string;
 				};
 				Insert: {
 					assigned_by: string;
-					created_at?: string;
-					id: string;
+					created_at?: string | null;
+					id?: string;
 					task_id: string;
 					user_id: string;
 				};
 				Update: {
 					assigned_by?: string;
-					created_at?: string;
+					created_at?: string | null;
 					id?: string;
 					task_id?: string;
 					user_id?: string;
 				};
 				Relationships: [
 					{
-						foreignKeyName: "task_assignees_assigned_by_fkey";
+						foreignKeyName: "fk_task_assignee_assigned_by";
 						columns: ["assigned_by"];
 						isOneToOne: false;
 						referencedRelation: "users";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "task_assignees_task_id_fkey";
+						foreignKeyName: "fk_task_assignee_task";
 						columns: ["task_id"];
 						isOneToOne: false;
 						referencedRelation: "tasks";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "task_assignees_user_id_fkey";
+						foreignKeyName: "fk_task_assignee_user";
 						columns: ["user_id"];
 						isOneToOne: false;
 						referencedRelation: "users";
@@ -223,10 +228,10 @@ export type Database = {
 			};
 			tasks: {
 				Row: {
-					created_at: string;
+					created_at: string | null;
 					created_by: string;
 					description: string | null;
-					due_date: string | null;
+					end_date: string | null;
 					id: string;
 					priority: Database["public"]["Enums"]["priority"];
 					project_id: string;
@@ -236,11 +241,11 @@ export type Database = {
 					title: string;
 				};
 				Insert: {
-					created_at?: string;
+					created_at?: string | null;
 					created_by: string;
 					description?: string | null;
-					due_date?: string | null;
-					id: string;
+					end_date?: string | null;
+					id?: string;
 					priority: Database["public"]["Enums"]["priority"];
 					project_id: string;
 					start_date?: string | null;
@@ -249,10 +254,10 @@ export type Database = {
 					title: string;
 				};
 				Update: {
-					created_at?: string;
+					created_at?: string | null;
 					created_by?: string;
 					description?: string | null;
-					due_date?: string | null;
+					end_date?: string | null;
 					id?: string;
 					priority?: Database["public"]["Enums"]["priority"];
 					project_id?: string;
@@ -262,6 +267,20 @@ export type Database = {
 					title?: string;
 				};
 				Relationships: [
+					{
+						foreignKeyName: "fk_task_creator";
+						columns: ["created_by"];
+						isOneToOne: false;
+						referencedRelation: "users";
+						referencedColumns: ["id"];
+					},
+					{
+						foreignKeyName: "fk_task_project";
+						columns: ["project_id"];
+						isOneToOne: false;
+						referencedRelation: "projects";
+						referencedColumns: ["id"];
+					},
 					{
 						foreignKeyName: "tasks_created_by_fkey";
 						columns: ["created_by"];
@@ -280,21 +299,21 @@ export type Database = {
 			};
 			team_members: {
 				Row: {
-					created_at: string;
+					created_at: string | null;
 					id: string;
 					role: Database["public"]["Enums"]["roles"];
 					team_id: string;
 					user_id: string;
 				};
 				Insert: {
-					created_at?: string;
-					id: string;
+					created_at?: string | null;
+					id?: string;
 					role: Database["public"]["Enums"]["roles"];
 					team_id: string;
 					user_id: string;
 				};
 				Update: {
-					created_at?: string;
+					created_at?: string | null;
 					id?: string;
 					role?: Database["public"]["Enums"]["roles"];
 					team_id?: string;
@@ -302,14 +321,14 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "team_members_team_id_fkey";
+						foreignKeyName: "fk_team_member_team";
 						columns: ["team_id"];
 						isOneToOne: false;
 						referencedRelation: "teams";
 						referencedColumns: ["id"];
 					},
 					{
-						foreignKeyName: "team_members_user_id_fkey";
+						foreignKeyName: "fk_team_member_user";
 						columns: ["user_id"];
 						isOneToOne: false;
 						referencedRelation: "users";
@@ -319,21 +338,21 @@ export type Database = {
 			};
 			teams: {
 				Row: {
-					created_at: string;
+					created_at: string | null;
 					description: string | null;
 					id: string;
 					name: string;
 					owner_id: string;
 				};
 				Insert: {
-					created_at?: string;
+					created_at?: string | null;
 					description?: string | null;
-					id: string;
+					id?: string;
 					name: string;
 					owner_id: string;
 				};
 				Update: {
-					created_at?: string;
+					created_at?: string | null;
 					description?: string | null;
 					id?: string;
 					name?: string;
@@ -341,7 +360,7 @@ export type Database = {
 				};
 				Relationships: [
 					{
-						foreignKeyName: "teams_owner_id_fkey";
+						foreignKeyName: "fk_team_owner";
 						columns: ["owner_id"];
 						isOneToOne: false;
 						referencedRelation: "users";
@@ -351,35 +370,27 @@ export type Database = {
 			};
 			users: {
 				Row: {
-					created_at: string;
+					created_at: string | null;
 					email: string;
 					id: string;
 					name: string;
 					profile_picture: string | null;
 				};
 				Insert: {
-					created_at?: string;
+					created_at?: string | null;
 					email: string;
-					id: string;
+					id?: string;
 					name: string;
 					profile_picture?: string | null;
 				};
 				Update: {
-					created_at?: string;
+					created_at?: string | null;
 					email?: string;
 					id?: string;
 					name?: string;
 					profile_picture?: string | null;
 				};
-				Relationships: [
-					{
-						foreignKeyName: "users_id_fkey";
-						columns: ["id"];
-						isOneToOne: true;
-						referencedRelation: "users";
-						referencedColumns: ["id"];
-					}
-				];
+				Relationships: [];
 			};
 		};
 		Views: {

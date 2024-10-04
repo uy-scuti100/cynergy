@@ -7,6 +7,9 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { FiGithub, FiLoader, FiSlack } from "react-icons/fi";
 import { RiGoogleLine } from "react-icons/ri";
 import { handleSocialLogin } from "@/hooks/useSocialLogin";
+
+import LoginLogo from "./login-logo";
+import Image from "next/image";
 export default function LoginComponent() {
 	const [google, setGoogle] = useState(false);
 	const [github, setGithub] = useState(false);
@@ -14,27 +17,27 @@ export default function LoginComponent() {
 
 	const handleSocialLoginClick = async (provider: Provider) => {
 		// Set loading state based on provider
-		if (provider === "google") {
-			setGoogle(true);
-		} else if (provider === "github") {
-			setGithub(true);
-		} else if (provider === "slack") {
-			setSlack(true);
-		}
 
 		try {
+			if (provider === "google") {
+				setGoogle(true);
+			} else if (provider === "github") {
+				setGithub(true);
+			} else if (provider === "slack") {
+				setSlack(true);
+			}
 			await handleSocialLogin(provider);
 		} catch (error) {
 			console.error("Social login error:", error);
 		} finally {
-			// Reset loading state after handling
-			if (provider === "google") {
-				setGoogle(false);
-			} else if (provider === "github") {
-				setGithub(false);
-			} else if (provider === "slack") {
-				setSlack(false);
-			}
+			// // Reset loading state after handling
+			// if (provider === "google") {
+			// 	setGoogle(false);
+			// } else if (provider === "github") {
+			// 	setGithub(false);
+			// } else if (provider === "slack") {
+			// 	setSlack(false);
+			// }
 		}
 	};
 
@@ -42,11 +45,14 @@ export default function LoginComponent() {
 		<div className="fixed inset-0 flex items-center justify-center">
 			<div className="grid justify-center w-full sm:w-[26rem] sm:p-5">
 				<div className="text-center space-y-8">
-					<div className="flex justify-center items-center gap-2">logo</div>
+					<div className="flex justify-center items-center gap-2">
+						{/* <LoginLogo /> */}
+						<Image src="/new-logo.png" alt="logo" width={250} height={100} />
+					</div>
 
 					<p className="pb-5 font-medium">
-						Welcome! <br />
-						Please sign in to continue
+						{/* Welcome! <br />
+						Please sign in to continue */}
 					</p>
 				</div>
 

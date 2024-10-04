@@ -1,53 +1,51 @@
 export interface ITask {
 	id: string;
 	title: string;
+	tags?: string[];
 	description?: string;
 	project_id: string;
 	created_by: string;
 	status: "backlog" | "in_review" | "in_progress" | "complete";
 	priority: "low" | "medium" | "high";
-	due_date?: Date;
-	start_date?: Date;
+	start_date?: string | null;
+	end_date?: string | null;
 	created_at: Date;
-	comments?: Comment[]; // Array of related comments
-	assignees?: TaskAssignee[]; // Array of related task assignees
+	task_assignees: ITaskAssignee[];
+	comments?: IComment[];
 }
 
 export interface IComment {
 	id: string;
 	task_id: string;
 	user_id: string;
+	project_id?: string; // Optional to match schema
 	content: string;
-	parent_id?: string; // ID of the parent comment if it’s a reply
-	created_at: Date;
-	task: Task; // Related task
-	user: User; // Related user
-	parent?: Comment; // Parent comment for replies
-	replies: Comment[]; // Replies to this comment
+	parent_id?: string; // Optional to match schema
+	created_at?: Date; // Optional to match schema
+	parent?: IComment; // Parent comment for replies
+	comments?: IComment[]; // Replies to this comment
 }
 
 export interface IUser {
 	id: string;
 	email: string;
 	name: string;
-	profile_picture?: string | null;
-	teams_owned?: Team[]; // Teams owned by the user
-	teams?: TeamMember[]; // Teams the user is a member of
-	projects_owned?: Project[]; // Projects owned by the user
-	tasks_created?: Task[]; // Tasks created by the user
-	tasks_assigned?: TaskAssignee[]; // Tasks assigned to the user
-	assigned_tasks?: TaskAssignee[]; // Tasks assigned by the user
+	profile_picture?: string | null; // Matches schema
+	teams_owned?: ITeam[]; // Teams owned by the user
+	teams?: ITeamMember[]; // Teams the user is a member of
+	projects_owned?: IProject[]; // Projects owned by the user
+	tasks_created?: ITask[]; // Tasks created by the user
+	tasks_assigned?: ITaskAssignee[]; // Tasks assigned to the user
 }
 
 export interface ITeam {
 	id: string;
 	name: string;
-	description: string;
+	description?: string; // Optional to match schema
 	owner_id: string;
-	created_at: Date;
-	owner: User; // Owner of the team
-	members?: TeamMember[]; // Members of the team
-	projects?: Project[]; // Projects under this team
+	created_at?: Date; // Optional to match schema
+	members?: ITeamMember[]; // Members of the team
+	projects?: IProject[]; // Projects under this team
 }
 
 export interface ITeamMember {
@@ -55,9 +53,9 @@ export interface ITeamMember {
 	user_id: string;
 	team_id: string;
 	role: "owner" | "team_admin" | "project_admin" | "contributor" | "viewer";
-	created_at: Date;
-	user: User; // Related user
-	team: Team; // Related team
+	created_at?: Date;
+	user: IUser;
+	team: ITeam;
 }
 
 export interface IProject {
@@ -66,21 +64,23 @@ export interface IProject {
 	description?: string;
 	team_id: string;
 	owner_id: string;
-	created_at: Date;
-	team: Team; // Team associated with the project
-	owner: User; // Owner of the project
-	members: ProjectMember[]; // Members of the project
-	tasks: Task[]; // Tasks related to the project
+	created_at?: Date;
+	start_date?: string | null;
+	end_date?: string | null;
+	team: ITeam;
+	owner: IUser;
+	members?: IProjectMember[];
+	tasks?: ITask[];
 }
 
 export interface IProjectMember {
 	id: string;
 	user_id: string;
 	project_id: string;
-	role: "project_admin" | "contributor" | "viewer";
-	created_at: Date;
-	user: User; // Related user
-	project: Project; // Related project
+	role: "project_admin" | "contributor" | "viewer"; // Matches `roles`
+	created_at?: Date; // Optional to match schema
+	user: IUser; // Related user
+	project: IProject; // Related project
 }
 
 export interface ITaskAssignee {
@@ -88,8 +88,8 @@ export interface ITaskAssignee {
 	task_id: string;
 	user_id: string;
 	assigned_by: string;
-	created_at: Date;
-	task: Task; // Related task
-	user: User; // Assignee user
-	assigner: User; // User who assigned the task
+	created_at?: Date; // Optional to match schema
+	user: IUser; // Assignee user
+	assigner: IUser; // User who assigned the task
+	task: ITask; // Related task
 }
